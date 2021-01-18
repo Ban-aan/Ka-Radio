@@ -415,7 +415,7 @@
 /**
  * LWIP_SO_RCVBUF==1: Enable SO_RCVBUF processing.
  */
-#define LWIP_SO_RCVBUF                  0
+#define LWIP_SO_RCVBUF                  1
 
 /**
  * SO_REUSE==1: Enable SO_REUSEADDR option.
@@ -452,7 +452,7 @@
 /**
  * LWIP_IPV6==1: Enable IPv6
  */
-#define LWIP_IPV6                       0
+#define LWIP_IPV6                       1
 
 /*
    ---------------------------------------

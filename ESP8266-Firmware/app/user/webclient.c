@@ -136,7 +136,7 @@ ICACHE_FLASH_ATTR bool clientParsePlaylist(char* s)
   char* ns; 
   char path[255] = "/";
   char url[78]; 
-  char port[5] = "80";
+  char port[6] = "80";
   int remove = 0;
   int i = 0; int j = 0;
   
@@ -171,7 +171,7 @@ ICACHE_FLASH_ATTR bool clientParsePlaylist(char* s)
 	
 //	printf("parse str %s\n",str);
 	
-	while ((str[i] != '/')&&(str[i] != ':')&&(str[i] != 0x0a)&&(str[i] != 0x0d)&&(j<78)) {url[j] = str[i]; i++ ;j++;}
+	while ((str[i] != '/')&&(str[i] != ':')&&(str[i] != 0x0a)&&(str[i] != 0x0d)&&(j<77)) {url[j] = str[i]; i++ ;j++;}
 	url[j] = 0;
 //	kprintf("parse str url %s\n",url);
 	j = 0;
@@ -179,11 +179,12 @@ ICACHE_FLASH_ATTR bool clientParsePlaylist(char* s)
 	{
 		i++;
 		while ((str[i] != '/')&&(str[i] != 0x0a)&&(str[i] != 0x0d)) {port[j] = str[i]; i++ ;j++;}
+		port[j] = 0;
 	}
 	j = 0;
-	if ((str[i] != 0x0a)&&(str[i] != 0x0d)&&(str[i] != 0)&&(str[i] != '"')&&(str[i] != '<'))
+	if ((str[i] != 0x0a)&&(str[i] != 0x0d)&&(str[i] != 0)&&(str[i] != '"')&&(str[i] != '<')&&(j<254))
 	{	
-	  while ((str[i] != 0x0a)&&(str[i] != 0x0d)&&(str[i] != 0)&&(str[i] != '"')&&(str[i] != '<')&&(j<255)) {path[j] = str[i]; i++; j++;}
+	  while ((str[i] != 0x0a)&&(str[i] != 0x0d)&&(str[i] != 0)&&(str[i] != '"')&&(str[i] != '<')&&(j<254)) {path[j] = str[i]; i++; j++;}
 	  path[j] = 0;
 	}
 	
@@ -779,8 +780,7 @@ IRAM_ATTR void clientReceiveCallback(int sockfd, char *pdata, int len)
 							metad = header.members.single.metaint;
 //	printf("t1: 0x%x, cstatus: %d, icyfound: %d  metad:%d Metaint:%d\n", t1,cstatus, icyfound,metad, header.members.single.metaint); 
 						cstatus = C_DATA;	// a stream found
-//						VS1053_flush_cancel(0);
-//						VS1053_flush_cancel(1);
+
 						t2 = strstr(pdata, "Transfer-Encoding: chunked"); // chunked stream? 
 //						t2 = NULL;
 						chunked = 0;
@@ -1245,20 +1245,19 @@ ICACHE_FLASH_ATTR void clientTask(void *pvParams) {
 			if (playing)  // stop clean
 			{		
 				volume = VS1053_GetVolume();
-				bufferReset();
 				VS1053_SetVolume(0);
-				VS1053_flush_cancel(2);
+				bufferReset();
+				VS1053_flush_cancel();
 				playing = 0;
 				vTaskDelay(40);	// stop without click
 				//VS1053_LowPower();
 				VS1053_SetVolume(volume);
 			}	
 
-			bufferReset();
 			shutdown(sockfd,SHUT_RDWR); // stop the socket
 			vTaskDelay(1);	
 			close(sockfd);
-//			printf("WebClient Socket closed\n");
+			bufferReset();
 			if (cstatus == C_PLAYLIST) 			
 			{
 			  clientConnect();
