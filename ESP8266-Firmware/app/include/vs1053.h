@@ -15,8 +15,8 @@
 //#include "user/spi_ram_buffer.h"
 
 #define RST_PIN 0
-#define CS_PIN 15
-#define XDCS_PIN 5 //GPIO5 (!)
+#define CS_PIN 5
+#define XDCS_PIN 15 //GPIO5 (!)
 #define DREQ_PIN 4 //GPIO4 (!)
 
 #define SET 1
